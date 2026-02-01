@@ -1,0 +1,28 @@
+# file format
+version: "3.9"
+
+# root section for defining services
+services:
+  # service name
+  postgres:
+    # image name
+    image: postgres:16
+    # container name
+    container_name: postgres
+    restart: unless-stopped
+    # environment variables
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=auth_dev_master
+      - POSTGRES_DB=auth_dev
+    # port mapping
+    ports:
+      - 5478:5432
+    # volume mapping
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+

@@ -1,0 +1,10 @@
+# deps
+node_modules/
+
+/src/generated/prisma
+
+
+.env.local
+.env.*
+
+/data/postgres
