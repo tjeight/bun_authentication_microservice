@@ -10,3 +10,29 @@ export const adminUsers = table("admin_users", {
     updatedAt: t.timestamp().defaultNow(),
     deletedAt: t.timestamp(), // nullable by default
 })
+
+
+//  Admin Sessions Model
+export const adminSessions = table("admin_sessions", {
+    adminSessionId: t.uuid().defaultRandom().primaryKey(),
+
+    adminId: t
+        .uuid()
+        .notNull()
+        .references(() => adminUsers.adminId),
+
+    // 🔐 HASHED refresh token
+    refreshTokenHash: t.varchar({ length: 255 }).notNull(),
+
+    // ⏱ Session expiry
+    expiresAt: t.timestamp().notNull(),
+
+    // 🔁 Rotation tracking
+    lastRotatedAt: t.timestamp().defaultNow(),
+
+    // 
+    revokedAt: t.timestamp(),
+
+    createdAt: t.timestamp().defaultNow(),
+    updatedAt: t.timestamp().defaultNow(),
+})
