@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Login Test</title>
+</head>
+
+<body>
+    <h2>Admin Login</h2>
+
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Admin Email" required />
+        <br /><br />
+        <input type="password" id="password" placeholder="Password" required />
+        <br /><br />
+        <button type="submit">Login</button>
+    </form>
+
+    <pre id="output"></pre>
+
+    <script>
+        const form = document.getElementById("loginForm");
+        const output = document.getElementById("output");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const res = await fetch("http://localhost:3000/api/admin/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include", // 🔑 REQUIRED FOR COOKIES
+                body: JSON.stringify({
+                    adminEmail: document.getElementById("email").value,
+                    adminPassword: document.getElementById("password").value,
+                }),
+            });
+
+            const data = await res.json();
+            output.textContent = JSON.stringify(data, null, 2);
+        });
+    </script>
+</body>
+
+</html>

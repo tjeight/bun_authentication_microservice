@@ -1,0 +1,152 @@
+{
+	"id": "84b70ca7-0c34-4904-ad42-5db776a7ea76",
+	"prevId": "74ff3290-152d-4e13-82a4-090910365084",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.admin_sessions": {
+			"name": "admin_sessions",
+			"schema": "",
+			"columns": {
+				"admin_session_id": {
+					"name": "admin_session_id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"admin_id": {
+					"name": "admin_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"refresh_token_hash": {
+					"name": "refresh_token_hash",
+					"type": "varchar(255)",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"last_rotated_at": {
+					"name": "last_rotated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"revoked_at": {
+					"name": "revoked_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"admin_sessions_admin_id_admin_users_admin_id_fk": {
+					"name": "admin_sessions_admin_id_admin_users_admin_id_fk",
+					"tableFrom": "admin_sessions",
+					"tableTo": "admin_users",
+					"columnsFrom": ["admin_id"],
+					"columnsTo": ["admin_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.admin_users": {
+			"name": "admin_users",
+			"schema": "",
+			"columns": {
+				"admin_id": {
+					"name": "admin_id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"admin_email": {
+					"name": "admin_email",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"admin_password": {
+					"name": "admin_password",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"admin_users_adminEmail_unique": {
+					"name": "admin_users_adminEmail_unique",
+					"nullsNotDistinct": false,
+					"columns": ["admin_email"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

@@ -1,63 +1,61 @@
-import * as bcrypt from "bcryptjs"
+import * as bcrypt from "bcryptjs";
+import { sign, verify } from "hono/jwt";
+import type { AlgorithmTypes } from "hono/jwt";
 
-import { SignJWT, jwtVerify } from "jose"
 import {
-    JWT_SECRET_KEY,
-    JWT_ALGORITHM,
-    ACCESS_TOKEN_EXPIRES_IN,
-    REFRESH_TOKEN_EXPIRES_IN_SECONDS,
-} from "../configs/env"
+	JWT_SECRET_KEY,
+	JWT_ALGORITHM,
+	ACCESS_TOKEN_EXPIRES_IN,
+	REFRESH_TOKEN_EXPIRES_IN_SECONDS,
+} from "../configs/env";
 
-
+const JWT_ALG: AlgorithmTypes = (JWT_ALGORITHM as AlgorithmTypes) || "HS256";
 
 export async function hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10)
+	return bcrypt.hash(password, 10);
 }
 
 export async function verifyPassword(
-    password: string,
-    hash: string
+	password: string,
+	hash: string,
 ): Promise<boolean> {
-    return bcrypt.compare(password, hash)
+	return bcrypt.compare(password, hash);
 }
 
-
-// jose requires Uint8Array secret
-const secretKey = new TextEncoder().encode(JWT_SECRET_KEY)
-
+/* ================= JWT ================= */
 
 export async function generateAccessToken(
-    payload: Record<string, unknown>
+	payload: Record<string, unknown>,
 ): Promise<string> {
-    return new SignJWT(payload)
-        .setProtectedHeader({ alg: JWT_ALGORITHM || "HS256" })
-        .setIssuedAt()
-        .setExpirationTime(`${ACCESS_TOKEN_EXPIRES_IN}s`)
-        .sign(secretKey)
+	return sign(
+		{
+			...payload,
+			iat: Math.floor(Date.now() / 1000),
+			exp: Math.floor(Date.now() / 1000) + Number(ACCESS_TOKEN_EXPIRES_IN),
+		},
+		JWT_SECRET_KEY as string,
+		JWT_ALG,
+	);
 }
 
-/**
- * Generate Refresh Token (long-lived)
- */
 export async function generateRefreshToken(
-    payload: Record<string, unknown>
+	payload: Record<string, unknown>,
 ): Promise<string> {
-    return new SignJWT(payload)
-        .setProtectedHeader({ alg: JWT_ALGORITHM || "HS256" })
-        .setIssuedAt()
-        .setExpirationTime(`${REFRESH_TOKEN_EXPIRES_IN_SECONDS}s`)
-        .sign(secretKey)
+	return sign(
+		{
+			...payload,
+			iat: Math.floor(Date.now() / 1000),
+			exp:
+				Math.floor(Date.now() / 1000) +
+				Number(REFRESH_TOKEN_EXPIRES_IN_SECONDS),
+		},
+		JWT_SECRET_KEY as string,
+		JWT_ALG,
+	);
 }
 
-/**
- * Verify JWT (access or refresh)
- */
-export async function verifyToken<T extends object>(
-    token: string
-): Promise<T> {
-    const { payload } = await jwtVerify(token, secretKey, {
-        algorithms: [JWT_ALGORITHM || "HS256"],
-    })
+export async function verifyToken<T extends object>(token: string): Promise<T> {
+	const payload = await verify(token, JWT_SECRET_KEY as string, JWT_ALG);
 
-    return payload as T
+	return payload as T;
 }
